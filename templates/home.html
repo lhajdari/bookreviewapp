@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="row d-flex align-items-center">
+  <div class="col-md-6">
+    <h2>Books</h2>
+  </div>
+  <div class="col-md-6 align-self-sm-end">
+    <div class="input-group mb-3">
+  <input type="text" class="form-control" placeholder="Book info.." aria-label="Recipient's username" aria-describedby="button-addon2">
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+  </div>
+</div>
+  </div>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Title</th>
+      <th scope="col">Author</th>
+      <th scope="col">Publication Year</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for book in books %}
+    <tr>
+      <td>{{book.isbn}}</td>
+      <td>{{book.title}}</td>
+      <td>{{book.author}}</td>
+      <td>{{book.year}}</td>
+      <td><a href="{{url_for('goodreads_api', isbn=book.isbn)}}">View</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
