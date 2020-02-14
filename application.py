@@ -91,16 +91,39 @@ def profile():
         return render_template(url_for('login'))
 
 
-@app.route("/api/books/<isbn>")
+@app.route("/api/books/<isbn>", methods=["GET", "POST"])
 def goodreads_api(isbn):
-    url = f"https://www.goodreads.com/search/index.xml?key=L6W3G2oCzxZaAfamSx7yXw&q={isbn}"
-    res = requests.get(url)
-    data = xmltodict.parse(res.text)
-    bookinfo = {
-                    'author_name': data['GoodreadsResponse']['search']['results']['work']['best_book']['author']['name'],
-                    'book_title': data['GoodreadsResponse']['search']['results']['work']['best_book']['title'],
-                    'book_img': data['GoodreadsResponse']['search']['results']['work']['best_book']['image_url'],
-                    'ratings_count': data['GoodreadsResponse']['search']['results']['work']['ratings_count']['#text'],
-                    'avg_rating': data['GoodreadsResponse']['search']['results']['work']['average_rating']
-                }
-    return render_template('book.html', data=bookinfo)
+    if request.method == 'GET':
+        url = f"https://www.goodreads.com/search/index.xml?key=L6W3G2oCzxZaAfamSx7yXw&q={isbn}"
+        res = requests.get(url)
+        data = xmltodict.parse(res.text)
+        bookinfo = {
+                        'isbn': isbn,
+                        'author_name': data['GoodreadsResponse']['search']['results']['work']['best_book']['author']['name'],
+                        'book_title': data['GoodreadsResponse']['search']['results']['work']['best_book']['title'],
+                        'book_img': data['GoodreadsResponse']['search']['results']['work']['best_book']['image_url'],
+                        'ratings_count': data['GoodreadsResponse']['search']['results']['work']['ratings_count']['#text'],
+                        'avg_rating': data['GoodreadsResponse']['search']['results']['work']['average_rating']
+                    }
+        reviews = db.execute("select users.username, reviews.description from books join reviews on books.id = reviews.book_id join users on reviews.user_id = users.id where books.isbn = :isbn", {"isbn": isbn}).fetchall()
+        return render_template('book.html', data=bookinfo, reviews=reviews)
+    elif request.method == 'POST':
+        description = request.form.get('description')
+        user = session['id']
+        book = db.execute("SELECT id FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+        book_id = dict(book)
+        db.execute("INSERT INTO reviews (description, user_id, book_id) VALUES (:description, :user_id, :book_id)", {"description":description, "user_id":user, "book_id":book_id['id']})
+        db.commit()
+        return redirect(url_for('goodreads_api', isbn=isbn))
+
+
+@app.route("/search", methods=["GET"])
+def search():
+    if 'loggedin' in session and 'q' in request.args:
+        q = request.args.get('q')
+        data = db.execute('SELECT * FROM books WHERE isbn = :isbn OR title = :title OR author = :author OR year = :year', {"isbn": q, "title": q, "author": q, "year": q}).fetchall()
+        if data:
+            return render_template('search.html', books=data)
+        return render_template('404.html', q=q)
+    else:
+        return redirect(url_for('login'))
