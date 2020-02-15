@@ -1,30 +1,43 @@
-{% extends 'layout.html' %}
-
-{% block title %}Home{% endblock %}
-
-{% block content %}
+{% extends 'layout.html' %} {% block title %}Home{% endblock %} {% block content %}
 <div class="row absolute">
-  <div class="card col-4" style="width: 100%;">
-    <img src="{{data['book_img']}}" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h3>{{data['book_title']}}</h3>
-      <p class="card-text">{{data['author_name']}}</p>
+    <div class="card col-4" style="width: 100%;">
+        <img src="{{data['book_img']}}" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h3>{{data['book_title']}}</h3>
+            <p class="card-text">{{data['author_name']}}</p>
+        </div>
     </div>
-  </div>
-  <div class="col-8">
-    <h2>Reviews: #{{data['ratings_count']}} <p>average rating: {{data['avg_rating']}}</p></h2>
-    <p>Add a review..</p>
-    <form class="" action="{{url_for('goodreads_api', isbn=data['isbn'])}}" method="post">
-      <textarea name="description" rows="4" class="form-control"></textarea>
-      <button type="submit" class="mt-3 mb-3 btn btn-info" name="button">Add</button>
-    </form>
-    <div class="flow-y">
-      {% for review in reviews %}
-        <p>{{review.description}}</p>
-        <small>{{review.username}}</small>
-      {% endfor %}
+    <div class="col-8">
+        <h2><p>data from goodreads:</p>Reviews: #{{data['ratings_count']}} <p>average rating: {{data['avg_rating']}}</p></h2>
+        <form class="mt-3" action="{{url_for('goodreads_api', isbn=data['isbn'])}}" method="post">
+            <label for="description">Add a review..</label>
+            <textarea name="description" id="description" rows="2" class="form-control"></textarea>
+            {% if msg %}
+            <p class="text-danger">
+                {{msg}}
+            </p>
+            {% endif %}
+            <button type="submit" class="mt-3 mb-3 btn btn-info" name="button">Add</button>
+        </form>
+        <div class="flow-y">
+            {% for review in reviews %}
+            <div class="row">
+                <div class="col">
+                    <div class="media media-comment">
+                        <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+                            <div class="g-mb-15">
+                                <h5 class="h5 g-color-gray-dark-v1 mb-0">{{review.username}}</h5>
+                            </div>
+
+                            <p>{{review.description}}</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-  </div>
 </div>
 
 {% endblock %}

@@ -88,33 +88,54 @@ def profile():
         user = db.execute("SELECT * FROM users WHERE id = :id", {"id": session['id']}).fetchone()
         return render_template('profile.html', user=user)
     else:
-        return render_template(url_for('login'))
+        return redirect(url_for('login'))
 
 
 @app.route("/api/books/<isbn>", methods=["GET", "POST"])
 def goodreads_api(isbn):
-    if request.method == 'GET':
-        url = f"https://www.goodreads.com/search/index.xml?key=L6W3G2oCzxZaAfamSx7yXw&q={isbn}"
-        res = requests.get(url)
-        data = xmltodict.parse(res.text)
-        bookinfo = {
-                        'isbn': isbn,
-                        'author_name': data['GoodreadsResponse']['search']['results']['work']['best_book']['author']['name'],
-                        'book_title': data['GoodreadsResponse']['search']['results']['work']['best_book']['title'],
-                        'book_img': data['GoodreadsResponse']['search']['results']['work']['best_book']['image_url'],
-                        'ratings_count': data['GoodreadsResponse']['search']['results']['work']['ratings_count']['#text'],
-                        'avg_rating': data['GoodreadsResponse']['search']['results']['work']['average_rating']
-                    }
-        reviews = db.execute("select users.username, reviews.description from books join reviews on books.id = reviews.book_id join users on reviews.user_id = users.id where books.isbn = :isbn", {"isbn": isbn}).fetchall()
-        return render_template('book.html', data=bookinfo, reviews=reviews)
-    elif request.method == 'POST':
-        description = request.form.get('description')
-        user = session['id']
-        book = db.execute("SELECT id FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
-        book_id = dict(book)
-        db.execute("INSERT INTO reviews (description, user_id, book_id) VALUES (:description, :user_id, :book_id)", {"description":description, "user_id":user, "book_id":book_id['id']})
-        db.commit()
-        return redirect(url_for('goodreads_api', isbn=isbn))
+    msg=''
+    bookinfo = ''
+    if 'loggedin' in session:
+        if request.method == 'GET':
+            url = f"https://www.goodreads.com/search/index.xml?key=L6W3G2oCzxZaAfamSx7yXw&q={isbn}"
+            res = requests.get(url)
+            data = xmltodict.parse(res.text)
+            bookinfo = {
+                            'isbn': isbn,
+                            'author_name': data['GoodreadsResponse']['search']['results']['work']['best_book']['author']['name'],
+                            'book_title': data['GoodreadsResponse']['search']['results']['work']['best_book']['title'],
+                            'book_img': data['GoodreadsResponse']['search']['results']['work']['best_book']['image_url'],
+                            'ratings_count': data['GoodreadsResponse']['search']['results']['work']['ratings_count']['#text'],
+                            'avg_rating': data['GoodreadsResponse']['search']['results']['work']['average_rating']
+                        }
+            reviews = db.execute("select users.username, reviews.description from books join reviews on books.id = reviews.book_id join users on reviews.user_id = users.id where books.isbn = :isbn", {"isbn": isbn}).fetchall()
+            return render_template('book.html', data=bookinfo, reviews=reviews)
+        elif request.method == 'POST' and request.form.get('description') is not '':
+            description = request.form.get('description')
+            user = session['id']
+            book = db.execute("SELECT id FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+            book_id = dict(book)
+            db.execute("INSERT INTO reviews (description, user_id, book_id) VALUES (:description, :user_id, :book_id)", {"description":description, "user_id":user, "book_id":book_id['id']})
+            db.commit()
+            return redirect(url_for('goodreads_api', isbn=isbn))
+        else:
+            msg = 'Please fill description field..'
+            url = f"https://www.goodreads.com/search/index.xml?key=L6W3G2oCzxZaAfamSx7yXw&q={isbn}"
+            res = requests.get(url)
+            data = xmltodict.parse(res.text)
+            bookinfo = {
+                            'isbn': isbn,
+                            'author_name': data['GoodreadsResponse']['search']['results']['work']['best_book']['author']['name'],
+                            'book_title': data['GoodreadsResponse']['search']['results']['work']['best_book']['title'],
+                            'book_img': data['GoodreadsResponse']['search']['results']['work']['best_book']['image_url'],
+                            'ratings_count': data['GoodreadsResponse']['search']['results']['work']['ratings_count']['#text'],
+                            'avg_rating': data['GoodreadsResponse']['search']['results']['work']['average_rating']
+                        }
+            reviews = db.execute("select users.username, reviews.description from books join reviews on books.id = reviews.book_id join users on reviews.user_id = users.id where books.isbn = :isbn", {"isbn": isbn}).fetchall()
+            return render_template('book.html', data=bookinfo, reviews=reviews, msg=msg)
+    else:
+        return redirect(url_for('login'))
+
 
 
 @app.route("/search", methods=["GET"])
