@@ -1,0 +1,73 @@
+{% extends 'layout.html.j2' %}
+{% block content %}
+  <section class="hero ">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns">
+          <div class="column is-8 is-offset-2">
+            <figure class="image is-4by3">
+              <img src="{{book.image_url}}" alt="">
+            </figure>
+          </div>
+        </div>
+
+        <section class="section">
+          <div class="columns">
+            <div class="column is-8 is-offset-2">
+              <div class="content is-medium">
+                <h2 class="subtitle is-4">{{book.author}}</h2>
+                <h1 class="title">{{book.title}}</h1>
+                <p>this book has an average rating of <strong>{{book.average_rating}}</strong> from total of <strong>{{book.ratings_count}}</strong> ratings, if you want to share your opinion, add a review below..</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="is-divider"></div>
+
+        <section class="section">
+          <div class="section-light contact" id="contact">
+            <div class="container">
+              <div class="columns is-multiline aos-init aos-animate" data-aos="fade-in-up" data-aos-easing="linear">
+                <div class="column is-12 about-me">
+                  <h1 class="title has-text-centered section-title">
+                    Your review:
+                  </h1>
+                </div>
+                <div class="column is-8 is-offset-2">
+                  <form action="https://formspree.io/email@example.com" method="POST">
+                    <div class="field">
+                      <div class="control">
+                        <textarea class="textarea" placeholder="Textarea" name="Message"></textarea>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="control ">
+                        <button class="button is-info">
+                          Submit&nbsp;&nbsp;
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="columns">
+            <div class="column is-8 is-offset-2">
+              <div class="content is-medium">
+                <h2 class="subtitle is-4">{{book.author}}</h2>
+                <p>this book has an average rating of <strong>{{book.average_rating}}</strong>, if you want to share your opinion scroll below..</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

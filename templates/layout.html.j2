@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>bulma cards</title>
+    <link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+</head>
+
+<body>
+
+	<nav class="navbar">
+	  <div class="container">
+	    <div class="navbar-brand">
+	        <a class="navbar-item" href="{{url_for('index')}}">
+	              Book Review App
+	        </a>
+	        <span class="navbar-burger burger" data-target="navbarMenu">
+	          <span></span>
+	          <span></span>
+	          <span></span>
+	        </span>
+	    </div>
+	    <div id="navbarMenu" class="navbar-menu">
+	        <div class="navbar-end">
+	            <div class="navbar-item has-dropdown is-hoverable">
+	                <a class="navbar-link">
+	                        {{username}}
+	                    </a>
+	                <div class="navbar-dropdown">
+	                    <a href="{{url_for('logout')}}" class="navbar-item">
+	                        Logout
+	                    </a>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	  </div>
+	</nav>
+
+	<div>
+		{% block content %}
+		{% endblock %}
+	</div>
+</body>
+
+</html>
