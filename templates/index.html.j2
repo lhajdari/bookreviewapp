@@ -8,14 +8,14 @@
     </div>
     <div class="section">
         <div class="box">
-            <div class="field has-addons">
+            <form class="field has-addons" method="get" action="{{url_for('index')}}">
                 <div class="control is-expanded">
-                    <input class="input has-text-centered" type="search" placeholder="» » » » » » find me « « « « « «">
+                    <input class="input has-text-centered" name="q" type="search" placeholder="» » » » » » find me « « « « « «">
                 </div>
                 <div class="control">
-                    <a class="button is-info">Search</a>
+                    <button class="button is-info">Search</button>
                 </div>
-            </div>
+            </form>
         </div>
         <!-- Books -->
         <div class="row columns is-multiline">

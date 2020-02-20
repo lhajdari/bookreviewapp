@@ -35,14 +35,14 @@
                   </h1>
                 </div>
                 <div class="column is-8 is-offset-2">
-                  <form action="https://formspree.io/email@example.com" method="POST">
+                  <form action="{{url_for('book', isbn=book.isbn)}}" method="POST">
                     <div class="field">
                       <div class="control">
-                        <textarea class="textarea" placeholder="Textarea" name="Message"></textarea>
+                        <textarea class="textarea" placeholder="Textarea" name="description"></textarea>
                       </div>
                     </div>
                     <div class="field">
-                      <div class="control ">
+                      <div class="control">
                         <button class="button is-info">
                           Submit&nbsp;&nbsp;
                         </button>
@@ -58,11 +58,19 @@
         <section class="section">
           <div class="columns">
             <div class="column is-8 is-offset-2">
+            {% if reviews %}
+              {% for review in reviews %}
+                <div class="content is-medium">
+                  <h2 class="subtitle is-4">{{review.username}}</h2>
+                  <p>{{review.description}}</p>
+                </div>
+              {% endfor %}
+            {% else %}
               <div class="content is-medium">
-                <h2 class="subtitle is-4">{{book.author}}</h2>
-                <p>this book has an average rating of <strong>{{book.average_rating}}</strong>, if you want to share your opinion scroll below..</p>
+                <h2 class="subtitle is-4">This book has no reviews in this app.. but has {{book.ratings_count}} ratings on goodreads..</h2>
               </div>
-            </div>
+            {% endif %}
+          </div>
           </div>
         </section>
 
