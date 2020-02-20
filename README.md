@@ -1,3 +1,4 @@
-# Project 1
+# Book review website
 
-Web Programming with Python and JavaScript
+Built with Python
+used: flask, bulma, postgres (heroku), goodreads api
